@@ -13,10 +13,16 @@ function SearchBar(props) {
         }, [props.onSearch, term]
     );
 
+    const handleKeyPress = useCallback((e) => {
+        if (e.key === 'Enter') {
+            search();
+        }
+    }, [search]);
+
     return (
         <div className="SearchBar">
-            <input placeholder='Enter a Song, Album or Artist' onChange={handleTermChange} />
-            <button className="SearchButton" onClick={search}>Search</button>
+            <input placeholder='Enter a Song, Album or Artist' onKeyDown={handleKeyPress} onChange={handleTermChange} />
+            <button className="SearchButton" onClick={search} >Search</button>
         </div>
     );
 };

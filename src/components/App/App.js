@@ -11,6 +11,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistName, setPlaylistName] = useState("New Playlist");
   const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const search = useCallback((term) => {
     Spotify.search(term).then(setSearchResults);
@@ -20,13 +21,15 @@ function App() {
     if (playlistTracks.find((clickedTrack) => clickedTrack.id === track.id)) {
       return;
     } else {
-      setPlaylistTracks(prev => [track, ...prev])
+      setPlaylistTracks(prev => [track, ...prev]);
+      setSearchResults(searchResults.filter((clickedTrack) => clickedTrack.id !== track.id));
     }
-  }, [playlistTracks]
+  }, [playlistTracks, searchResults]
   );
 
   const removeTrack = useCallback((track) => {
     setPlaylistTracks(playlistTracks.filter((clickedTrack) => clickedTrack.id !== track.id));
+    setSearchResults(prev => [track, ...prev]);
   }, [playlistTracks]
   );
 
@@ -35,12 +38,31 @@ function App() {
   }, []);
 
   const savePlaylist = useCallback(() => {
+    setIsLoading(true);
     const trackURIs = playlistTracks.map((track) => track.uri);
     Spotify.savePlaylist(playlistName, trackURIs).then(() => {
       setPlaylistName('New Playlist');
       setPlaylistTracks([]);
+      setIsLoading(false);
     });
   }, [playlistName, playlistTracks]);
+
+  function renderAction() {
+    if(isLoading) {
+        return (
+        <div className="Playlist-container">
+          <h3>Saving Playlist...</h3>
+        </div>)
+    } else {
+        return (<Playlist 
+          playlistName={playlistName} 
+          playlistTracks={playlistTracks} 
+          onRemove={removeTrack} 
+          onNameChange={updatePlaylistName}
+          onSave={savePlaylist}
+        />)
+    }
+  };
 
   return (
     <div>
@@ -52,13 +74,7 @@ function App() {
           searchResults={searchResults} 
           onAdd={addTrack} 
           />
-          <Playlist 
-          playlistName={playlistName} 
-          playlistTracks={playlistTracks} 
-          onRemove={removeTrack} 
-          onNameChange={updatePlaylistName}
-          onSave={savePlaylist}
-          />
+          {renderAction()}
         </div>
       </div>
     </div>
