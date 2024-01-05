@@ -24,13 +24,27 @@ function Track(props) {
         }
     };
 
+    function renderPreview() {
+        if(props.preview && props.track.previewUrl) {
+            return (<audio className="Mini-player" controls>
+                        <source src={props.track.previewUrl} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                    </audio>
+        )} else {
+            return
+        }
+    };
+
     return (
         <div className="Track">
             <div className="Track-information">
                 <h3>{props.track.name}</h3>
                 <p>{props.track.artist} | {props.track.album}</p>
             </div>
-            {renderAction()}
+            <div className="Track-actions">
+                {renderPreview()}
+                {renderAction()}
+            </div>
         </div>
     );
 };

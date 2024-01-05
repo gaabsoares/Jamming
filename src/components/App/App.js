@@ -14,8 +14,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const search = useCallback((term) => {
-    Spotify.search(term).then(setSearchResults);
-  }, []);
+    Spotify.search(term).then((results) => {
+      const filteredResults = results.filter((result) => {
+        return !playlistTracks.some((playlistTrack) => playlistTrack.id === result.id);
+      });
+      setSearchResults(filteredResults);
+    });
+  }, [playlistTracks]);
 
   const addTrack = useCallback((track) => {
     if (playlistTracks.find((clickedTrack) => clickedTrack.id === track.id)) {

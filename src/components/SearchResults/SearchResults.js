@@ -10,7 +10,8 @@ function SearchResults(props) {
             <Tracklist 
             tracks={props.searchResults} 
             onAdd={props.onAdd}
-            isRemoval={false} 
+            isRemoval={false}
+            preview={true} 
             />
         </div>
     );
